@@ -55,6 +55,8 @@ jobs:
 
         run: |
           cd quant-tracer
+          python quant_tracer.py
+
           python quant_tracer.py --blue
           python quant_tracer.py --blue > blue_stocks_latest.txt
           mv blue_stocks_latest.txt ../
