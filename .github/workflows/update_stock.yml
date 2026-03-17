@@ -61,9 +61,15 @@ jobs:
 
           python quant_tracer.py --blue
           python quant_tracer.py --blue > blue_stocks_latest.txt
-          mv blue_stocks_latest.txt ../
+
+          python quant_tracer.py --former_blue
+          python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
+
+          mv *blue_stocks_latest.txt ../
+
           cd ..
-          cp blue_stocks_latest.txt blue_stocks_${TODAY}.txt
+          cp        blue_stocks_latest.txt        blue_stocks_${TODAY}.txt
+          cp former_blue_stocks_latest.txt former_blue_stocks_${TODAY}.txt
 
       - name: commit changes
         if: steps.check.outputs.should_run == 'true'
@@ -72,7 +78,7 @@ jobs:
           git config user.name "ci-bot"
           git config user.email "ci-bot@github.com"
 
-          git add blue_stocks_*.txt
+          git add *blue_stocks_*.txt
           git commit -m "[ci-bot] daily update: ${TODAY}" || echo "No changes"
           git push -u origin main
 
