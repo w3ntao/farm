@@ -59,11 +59,11 @@ jobs:
           cd quant-tracer
           python quant_tracer.py
 
-          python quant_tracer.py --blue
-          python quant_tracer.py --blue > blue_stocks_latest.txt
+          timeout 1h python quant_tracer.py --blue
+          timeout 1h python quant_tracer.py --blue > blue_stocks_latest.txt
 
-          python quant_tracer.py --former_blue
-          python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
+          timeout 1h python quant_tracer.py --former_blue
+          timeout 1h python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
 
           mv *blue_stocks_latest.txt ../
 
