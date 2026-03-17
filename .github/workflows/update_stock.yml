@@ -68,8 +68,8 @@ jobs:
           mv *blue_stocks_latest.txt ../
 
           cd ..
-          cp        blue_stocks_latest.txt        blue_stocks_${TODAY}.txt
-          cp former_blue_stocks_latest.txt former_blue_stocks_${TODAY}.txt
+          cp  blue_stocks_latest.txt         history/blue_stocks_${TODAY}.txt
+          cp  former_blue_stocks_latest.txt  history/former_blue_stocks_${TODAY}.txt
 
       - name: commit changes
         if: steps.check.outputs.should_run == 'true'
@@ -79,6 +79,8 @@ jobs:
           git config user.email "ci-bot@github.com"
 
           git add *blue_stocks_*.txt
+          git add history/*.txt
+
           git commit -m "[ci-bot] daily update: ${TODAY}" || echo "No changes"
           git push -u origin main
 
