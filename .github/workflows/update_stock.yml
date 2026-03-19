@@ -60,10 +60,10 @@ jobs:
           python quant_tracer.py
 
           timeout 1h python quant_tracer.py --blue
-          timeout 1h python quant_tracer.py --blue > blue_stocks_latest.txt
+          timeout 5m python quant_tracer.py --blue > blue_stocks_latest.txt
 
-          timeout 1h python quant_tracer.py --former_blue
-          timeout 1h python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
+          timeout 40m python quant_tracer.py --former_blue
+          timeout 5m  python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
 
           mv *blue_stocks_latest.txt ../
 
