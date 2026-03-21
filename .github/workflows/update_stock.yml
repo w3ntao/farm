@@ -22,23 +22,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v6
 
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+
       - name: Set DATE variable
         env:
           TZ: Asia/Shanghai
         run: |
-          echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "STOCK_DATE=$(python market_utility.py --last_stock_date)" >> $GITHUB_ENV
 
       - name: check market open
         id: check
         run: |
-          pip install --upgrade chinese_calendar
-
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "should_run=true" >> ${GITHUB_OUTPUT}
             exit 0
           fi
 
-          if python stock_market_open.py; then
+          if python market_utility.py --open_today; then
             echo "should_run=true" >> ${GITHUB_OUTPUT}
           else
             echo "market closed today, skipping workflow"
@@ -59,17 +61,17 @@ jobs:
           cd quant-tracer
           python quant_tracer.py
 
-          timeout 1h python quant_tracer.py --blue
-          timeout 5m python quant_tracer.py --blue > blue_stocks_latest.txt
+          timeout 40m python quant_tracer.py --blue
+          timeout 5m  python quant_tracer.py --blue > blue_stocks_latest.txt
 
-          timeout 40m python quant_tracer.py --former_blue
+          timeout 30m python quant_tracer.py --former_blue
           timeout 5m  python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
 
           mv *blue_stocks_latest.txt ../
 
           cd ..
-          cp  blue_stocks_latest.txt         history/blue_stocks_${TODAY}.txt
-          cp  former_blue_stocks_latest.txt  history/former_blue_stocks_${TODAY}.txt
+          cp  blue_stocks_latest.txt         history/blue_stocks_${STOCK_DATE}.txt
+          cp  former_blue_stocks_latest.txt  history/former_blue_stocks_${STOCK_DATE}.txt
 
       - name: commit changes
         if: steps.check.outputs.should_run == 'true'
@@ -81,8 +83,8 @@ jobs:
           git add *blue_stocks_*.txt
           git add history/*.txt
 
-          git commit -m "[ci-bot] daily update: ${TODAY}" || echo "No changes"
+          git commit -m "[ci-bot] daily update: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main
 
-          git checkout -B backup-${TODAY}
-          git push -u origin backup-${TODAY}
+          git checkout -B backup-${STOCK_DATE}
+          git push -u origin backup-${STOCK_DATE}
