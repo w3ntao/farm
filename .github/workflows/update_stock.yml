@@ -5,9 +5,10 @@ on:
   #  branches: ["main"]
 
   schedule:
-    - cron: "0 10 * * *"
-    # runs on 10:00 of everyday
-    # 10:00 UTC = 18:00 Beijing
+    - cron: "0 9 * * *"
+    # runs on 9:00 of everyday
+    # 9:00 UTC = 17:00 Beijing
+    # cron is usually delayed so it would probably start around 18:00
   workflow_dispatch:
 
 permissions:
@@ -72,6 +73,13 @@ jobs:
           cd ..
           cp  blue_stocks_latest.txt         history/blue_stocks_${STOCK_DATE}.txt
           cp  former_blue_stocks_latest.txt  history/former_blue_stocks_${STOCK_DATE}.txt
+
+      - name: upload stock cache
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.STOCK_DATE }}
+          path: quant-tracer/cache/${{ env.STOCK_DATE }}/*
 
       - name: commit changes
         if: steps.check.outputs.should_run == 'true'
