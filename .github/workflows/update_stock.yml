@@ -99,7 +99,7 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: cache-${{ env.STOCK_DATE }}
+          tag_name: ${{ env.STOCK_DATE }}
           name: cache-${{ env.STOCK_DATE }}
           body: |
             daily cache: ${{ env.STOCK_DATE }}
