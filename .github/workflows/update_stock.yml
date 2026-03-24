@@ -63,25 +63,23 @@ jobs:
           python quant_tracer.py
 
           timeout 40m python quant_tracer.py --blue
-          timeout 5m  python quant_tracer.py --blue > blue_stocks_latest.txt
+          timeout 1m  python quant_tracer.py --blue > ../blue_stocks_latest.txt
 
           timeout 30m python quant_tracer.py --former_blue
-          timeout 5m  python quant_tracer.py --former_blue > former_blue_stocks_latest.txt
-
-          mv *blue_stocks_latest.txt ../
+          timeout 1m  python quant_tracer.py --former_blue > ../former_blue_stocks_latest.txt
 
           cd ..
           cp  blue_stocks_latest.txt         history/blue_stocks_${STOCK_DATE}.txt
           cp  former_blue_stocks_latest.txt  history/former_blue_stocks_${STOCK_DATE}.txt
 
-      - name: upload stock cache
+      - name: archive stock cache
         if: steps.check.outputs.should_run == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.STOCK_DATE }}
-          path: quant-tracer/cache/${{ env.STOCK_DATE }}/*
+        run: |
+          cd quant-tracer/cache
+          zip -r "${GITHUB_WORKSPACE}/${STOCK_DATE}.zip" "${STOCK_DATE}"
 
       - name: commit changes
+        id: commit
         if: steps.check.outputs.should_run == 'true'
 
         run: |
@@ -96,3 +94,13 @@ jobs:
 
           git checkout -B backup-${STOCK_DATE}
           git push -u origin backup-${STOCK_DATE}
+
+      - name: publish stock cache release
+        if: steps.check.outputs.should_run == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cache-${{ env.STOCK_DATE }}
+          name: cache-${{ env.STOCK_DATE }}
+          body: |
+            daily cache: ${{ env.STOCK_DATE }}
+          files: ${{ env.STOCK_DATE }}.zip
