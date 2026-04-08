@@ -63,14 +63,13 @@ jobs:
           python quant_tracer.py
 
           timeout 40m python quant_tracer.py --blue
-          timeout 1m  python quant_tracer.py --blue > ../blue_stocks_latest.txt
+          timeout 1m  python quant_tracer.py --blue > "../history/blue_stocks_${STOCK_DATE}.txt"
 
           timeout 30m python quant_tracer.py --former_blue
-          timeout 1m  python quant_tracer.py --former_blue > ../former_blue_stocks_latest.txt
+          timeout 1m  python quant_tracer.py --former_blue > "../history/former_blue_stocks_${STOCK_DATE}.txt"
 
           cd ..
-          cp  blue_stocks_latest.txt         history/blue_stocks_${STOCK_DATE}.txt
-          cp  former_blue_stocks_latest.txt  history/former_blue_stocks_${STOCK_DATE}.txt
+          printf '%s\n' "${STOCK_DATE}" > stock_date.txt
 
       - name: archive stock cache
         if: steps.check.outputs.should_run == 'true'
@@ -86,8 +85,7 @@ jobs:
           git config user.name "ci-bot"
           git config user.email "ci-bot@github.com"
 
-          git add *blue_stocks_*.txt
-          git add history/*.txt
+          git add history/*.txt stock_date.txt
 
           git commit -m "[ci-bot] daily update: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main

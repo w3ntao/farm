@@ -1,3 +1,8 @@
+<!--
+$ python3 -m http.server 8000
+http://localhost:8000
+-->
+
 <!DOCTYPE html>
 <html lang="zh">
 
@@ -61,13 +66,38 @@
             return html;
         }
 
-        fetch("blue_stocks_latest.txt")
-            .then(r => r.text())
+        function fetchLatestBlueStocksText() {
+            return fetch("stock_date.txt")
+                .then(r => {
+                    if (!r.ok) {
+                        throw new Error("failed to load latest date");
+                    }
+
+                    return r.text();
+                })
+                .then(latestDate => {
+                    const fileName = latestDate.trim();
+
+                    return fetch(`history/blue_stocks_${fileName}.txt`);
+                })
+                .then(r => {
+                    if (!r.ok) {
+                        throw new Error("failed to load blue stocks content");
+                    }
+
+                    return r.text();
+                });
+        }
+
+        fetchLatestBlueStocksText()
             .then(text => {
                 const processed = preprocessStrike(text);
                 const finalHtml = renderAnsi(processed);
 
                 document.getElementById("content").innerHTML = finalHtml;
+            })
+            .catch(error => {
+                document.getElementById("content").textContent = error.message;
             });
     </script>
 
