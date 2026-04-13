@@ -6,8 +6,7 @@ import os
 
 import akshare.stock_feature.stock_hist_tx as stock_hist_tx
 
-stock_hist_tx.get_tqdm = lambda enable=True: (lambda iterable, *args, **kwargs:
-                                              iterable)
+stock_hist_tx.get_tqdm = lambda enable=True: (lambda iterable, *args, **kwargs: iterable)
 # to hide tqdm progressive bar
 
 
@@ -37,13 +36,9 @@ def stock_open_today(date=None):
 def main():
     parser = argparse.ArgumentParser(description="stock market utilities")
 
-    parser.add_argument("--last_stock_date",
-                        action="store_true",
-                        help="print last stock date")
+    parser.add_argument("--last_stock_date", action="store_true", help="print last stock date")
 
-    parser.add_argument("--open_today",
-                        action="store_true",
-                        help="if stock market open today")
+    parser.add_argument("--open_today", action="store_true", help="if stock market open today")
 
     args = parser.parse_args()
 
