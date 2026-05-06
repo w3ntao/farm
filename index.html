@@ -1,6 +1,8 @@
 <!--
 $ python3 -m http.server 8000
+
 http://localhost:8000
+http://localhost:8000/former_blue
 -->
 
 <!DOCTYPE html>
@@ -8,99 +10,14 @@ http://localhost:8000
 
 <head>
     <script src="https://cdn.jsdelivr.net/npm/ansi_up@5.1.0/ansi_up.min.js"></script>
+    <script src="js/app.js" defer data-stock-file-prefix="blue_stocks"></script>
     <meta charset="UTF-8" />
     <title>Wentao Farm</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <pre id="content">loading...</pre>
-
-    <script>
-        function preprocessStrike(text) {
-            const STRIKE_ON = "__SGR_STRIKE_ON__";
-            const STRIKE_OFF = "__SGR_STRIKE_OFF__";
-
-            return text.replace(/\x1b\[([0-9;]*)m/g, (match, params) => {
-
-                if (!params) return match;
-
-                const codes = params.split(";").map(Number);
-
-                let hasStrikeOn = codes.includes(9);
-                let hasStrikeOff = codes.includes(29);
-                let hasReset = codes.includes(0);
-
-                // 移除 9 和 29
-                const remaining = codes.filter(c => c !== 9 && c !== 29);
-
-                let rebuilt = "";
-
-                if (remaining.length > 0) {
-                    rebuilt += `\x1b[${remaining.join(";")}m`;
-                }
-
-                if (hasReset || hasStrikeOff) {
-                    rebuilt += STRIKE_OFF;
-                }
-
-                if (hasStrikeOn) {
-                    rebuilt += STRIKE_ON;
-                }
-
-                return rebuilt;
-            });
-        }
-
-        function renderAnsi(text) {
-            const STRIKE_ON = "__SGR_STRIKE_ON__";
-            const STRIKE_OFF = "__SGR_STRIKE_OFF__";
-
-            const ansi_up = new AnsiUp();
-            let html = ansi_up.ansi_to_html(text);
-
-            html = html
-                .replaceAll(STRIKE_ON, "<span class='sgr-strike'>")
-                .replaceAll(STRIKE_OFF, "</span>");
-
-            return html;
-        }
-
-        function fetchLatestBlueStocksText() {
-            return fetch("stock_date.txt")
-                .then(r => {
-                    if (!r.ok) {
-                        throw new Error("failed to load latest date");
-                    }
-
-                    return r.text();
-                })
-                .then(latestDate => {
-                    const fileName = latestDate.trim();
-
-                    return fetch(`history/blue_stocks_${fileName}.txt`);
-                })
-                .then(r => {
-                    if (!r.ok) {
-                        throw new Error("failed to load blue stocks content");
-                    }
-
-                    return r.text();
-                });
-        }
-
-        fetchLatestBlueStocksText()
-            .then(text => {
-                const processed = preprocessStrike(text);
-                const finalHtml = renderAnsi(processed);
-
-                document.getElementById("content").innerHTML = finalHtml;
-            })
-            .catch(error => {
-                document.getElementById("content").textContent = error.message;
-            });
-    </script>
-
 </body>
 
 </html>
