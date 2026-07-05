@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
   workflow_run:
-    workflows: ["update_stock"]
+    workflows: ["update_lowvol", "update_history_hushen300"]
     types:
       - completed
 

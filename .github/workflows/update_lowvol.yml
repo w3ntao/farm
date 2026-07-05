@@ -1,4 +1,4 @@
-name: update_stock
+name: update_lowvol
 
 on:
   #push: # don't trigger workflow from push
@@ -90,8 +90,8 @@ jobs:
           git commit -m "[ci-bot] daily update: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main
 
-          git checkout -B backup-${STOCK_DATE}
-          git push -u origin backup-${STOCK_DATE}
+          git checkout -B lowvol-${STOCK_DATE}
+          git push -u origin lowvol-${STOCK_DATE}
 
       - name: publish stock cache release
         if: steps.check.outputs.should_run == 'true'
