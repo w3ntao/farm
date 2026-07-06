@@ -38,12 +38,15 @@ jobs:
           git clone https://x-access-token:${{ secrets.KEY_QUANT_TRACER }}@github.com/w3ntao/quant-tracer.git
           pip install --upgrade -r quant-tracer/requirements.txt
 
-      - name: trace HuShen300
+      - name: trace history
         run: |
           cd quant-tracer
-          timeout 1h python quant_tracer.py --hushen300
+          timeout 1h  python quant_tracer.py --history300
+          timeout 10m python quant_tracer.py --history100
 
-          cp hushen300_*.png ../hushen300
+          cp hushen300_*.png     ../hushen300
+          cp zhongzheng100_*.png ../zhongzheng100
+
           cd ..
 
       - name: commit changes
@@ -54,8 +57,9 @@ jobs:
           git config user.email "wentao.liu.zero@outlook.com"
 
           git add hushen300
+          git add zhongzheng100
 
-          git commit -m "[ci-bot] weekly update for HuShen300-backtrace: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] weekly update for history backtrace: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main
 
           git checkout -B history-${STOCK_DATE}
