@@ -44,20 +44,8 @@ function renderAnsi(text) {
     return html;
 }
 
-function fetchLatestBlueStocksText(stockFilePrefix, siteRoot) {
-    return fetch(new URL("stock_date.txt", siteRoot))
-        .then(r => {
-            if (!r.ok) {
-                throw new Error("failed to load latest date");
-            }
-
-            return r.text();
-        })
-        .then(latestDate => {
-            const fileName = latestDate.trim();
-
-            return fetch(new URL(`history/${stockFilePrefix}_${fileName}.txt`, siteRoot));
-        })
+function fetchLatestBlueStocksText(stockFilePath, siteRoot) {
+    return fetch(new URL(stockFilePath, siteRoot))
         .then(r => {
             if (!r.ok) {
                 throw new Error("failed to load stock content");
@@ -68,10 +56,10 @@ function fetchLatestBlueStocksText(stockFilePrefix, siteRoot) {
 }
 
 const appScript = document.currentScript;
-const stockFilePrefix = appScript.dataset.stockFilePrefix;
+const stockFilePath = appScript.dataset.stockFilePath;
 const siteRoot = new URL("../", appScript.src);
 
-fetchLatestBlueStocksText(stockFilePrefix, siteRoot)
+fetchLatestBlueStocksText(stockFilePath, siteRoot)
     .then(text => {
         const processed = preprocessStrike(text);
         const finalHtml = renderAnsi(processed);
