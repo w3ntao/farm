@@ -16,7 +16,7 @@ permissions:
   # so github bot could commit changes
 
 jobs:
-  update-hushen300:
+  update-history:
     runs-on: ubuntu-latest
 
     steps:
