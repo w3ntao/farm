@@ -16,8 +16,11 @@ permissions:
   # so github bot could commit changes
 
 jobs:
-  update-stocks:
+  update-lowvol:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash # now you can use pushd and popd
 
     steps:
       - uses: actions/checkout@v4
@@ -59,41 +62,24 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
 
         run: |
-          cd quant-tracer
+          pushd quant-tracer
           python quant_tracer.py
 
-          timeout 40m python quant_tracer.py --lowvol
-          timeout 1m  python quant_tracer.py --lowvol > "../lowvol/blue_stocks.txt"
+          timeout 1h python quant_tracer.py --lowvol
+          timeout 5m python quant_tracer.py --lowvol > "../lowvol/blue_stocks.txt"
 
           timeout 30m python quant_tracer.py --lowvol_former
-          timeout 1m  python quant_tracer.py --lowvol_former > "../lowvol_former/former_blue_stocks.txt"
+          timeout 5m  python quant_tracer.py --lowvol_former > "../lowvol_former/former_blue_stocks.txt"
 
-          cd ..
+          popd
 
       - name: archive stock cache
-        if: steps.check.outputs.should_run == 'true'
         run: |
-          cd quant-tracer/cache
+          pushd quant-tracer/cache
           zip -r "${GITHUB_WORKSPACE}/${STOCK_DATE}.zip" "${STOCK_DATE}"
-
-      - name: commit changes
-        id: commit
-        if: steps.check.outputs.should_run == 'true'
-
-        run: |
-          git config user.name "Wentao Liu"
-          git config user.email "wentao.liu.zero@outlook.com"
-
-          git add -u
-
-          git commit -m "[ci-bot] daily update: ${STOCK_DATE}" || echo "No changes"
-          git push -u origin main
-
-          git checkout -B lowvol-${STOCK_DATE}
-          git push -u origin lowvol-${STOCK_DATE}
+          popd
 
       - name: publish stock cache release
-        if: steps.check.outputs.should_run == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.STOCK_DATE }}
@@ -101,3 +87,19 @@ jobs:
           body: |
             daily cache: ${{ env.STOCK_DATE }}
           files: ${{ env.STOCK_DATE }}.zip
+
+      - name: commit changes
+        if: steps.check.outputs.should_run == 'true'
+
+        run: |
+          git config user.name "Wentao Liu"
+          git config user.email "wentao.liu.zero@outlook.com"
+
+          git pull
+          git add -u
+
+          git commit -m "[ci-bot] daily lowvol: ${STOCK_DATE}" || echo "No changes"
+          git push -u origin main
+
+          git checkout -B lowvol-${STOCK_DATE}
+          git push -u origin lowvol-${STOCK_DATE}

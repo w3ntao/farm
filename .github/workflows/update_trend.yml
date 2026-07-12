@@ -1,13 +1,13 @@
-name: update_history
+name: update_trend
 
 on:
   #push: # don't trigger workflow from push
   #  branches: ["main"]
 
   schedule:
-    - cron: "0 17 * * 5"
-    # runs at 01:00 every Saturday, Beijing time
-    # 17:00 UTC Friday = 01:00 Beijing Saturday
+    - cron: "0 20 * * 5"
+    # runs at 04:00 every Saturday, Beijing time
+    # 20:00 UTC Friday = 01:00 Beijing Saturday
     # cron may be delayed by GitHub Actions
   workflow_dispatch:
 
@@ -16,7 +16,7 @@ permissions:
   # so github bot could commit changes
 
 jobs:
-  update-history:
+  update-trend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,16 +41,15 @@ jobs:
           git clone https://x-access-token:${{ secrets.KEY_QUANT_TRACER }}@github.com/w3ntao/quant-tracer.git
           pip install --upgrade -r quant-tracer/requirements.txt
 
-      - name: trace history
+      - name: trace stocks
         run: |
           pushd quant-tracer
-          timeout 2h python quant_tracer.py --history300
-          cp hushen300_*.png ../history300
+          python quant_tracer.py
 
-          timeout 1h python quant_tracer.py --history100
-          cp zhongzheng100_*.png ../history100
+          timeout 2h python quant_tracer.py --trend
+          timeout 5m python quant_tracer.py --trend > "../trend/trend.txt"
 
-          popd ..
+          popd
 
       - name: archive stock cache
         run: |
@@ -73,10 +72,10 @@ jobs:
           git config user.email "wentao.liu.zero@outlook.com"
 
           git pull
-          git add history*
+          git add -u
 
-          git commit -m "[ci-bot] weekly history: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] weekly trend: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main
 
-          git checkout -B history-${STOCK_DATE}
-          git push -u origin history-${STOCK_DATE}
+          git checkout -B trend-${STOCK_DATE}
+          git push -u origin trend-${STOCK_DATE}
