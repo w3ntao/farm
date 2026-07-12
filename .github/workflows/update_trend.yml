@@ -67,6 +67,8 @@ jobs:
           files: ${{ env.STOCK_DATE }}.zip
 
       - name: commit changes
+        env:
+          TZ: Asia/Shanghai
         run: |
           git config user.name "Wentao Liu"
           git config user.email "wentao.liu.zero@outlook.com"

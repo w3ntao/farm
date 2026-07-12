@@ -90,7 +90,8 @@ jobs:
 
       - name: commit changes
         if: steps.check.outputs.should_run == 'true'
-
+        env:
+          TZ: Asia/Shanghai
         run: |
           git config user.name "Wentao Liu"
           git config user.email "wentao.liu.zero@outlook.com"
