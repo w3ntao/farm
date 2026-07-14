@@ -101,6 +101,3 @@ jobs:
 
           git commit -m "[ci-bot] daily lowvol: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main
-
-          git checkout -B lowvol-${STOCK_DATE}
-          git push -u origin lowvol-${STOCK_DATE}

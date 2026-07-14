@@ -1,22 +1,23 @@
-name: update_history
+name: update_history300
 
 on:
   #push: # don't trigger workflow from push
   #  branches: ["main"]
+
+  workflow_dispatch:
 
   schedule:
     - cron: "0 17 * * 5"
     # runs at 01:00 every Saturday, Beijing time
     # 17:00 UTC Friday = 01:00 Beijing Saturday
     # cron may be delayed by GitHub Actions
-  workflow_dispatch:
 
 permissions:
   contents: write
   # so github bot could commit changes
 
 jobs:
-  update-history:
+  update-history300:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -78,8 +79,5 @@ jobs:
           git pull
           git add history*
 
-          git commit -m "[ci-bot] weekly history: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] weekly history300: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main
-
-          git checkout -B history-${STOCK_DATE}
-          git push -u origin history-${STOCK_DATE}
