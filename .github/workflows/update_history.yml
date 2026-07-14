@@ -44,11 +44,12 @@ jobs:
       - name: trace history
         run: |
           pushd quant-tracer
-          timeout 2h python quant_tracer.py --history300
-          cp hushen300_*.png ../history300
 
           timeout 1h python quant_tracer.py --history100
-          cp zhongzheng100_*.png ../history100
+          mv zhongzheng100_*.png ../history100
+
+          timeout 2h python quant_tracer.py --history300
+          mv hushen300_*.png ../history300
 
           popd ..
 
