@@ -1,15 +1,15 @@
-name: update_trend
+name: update_trend2000
 
 on:
   #push: # don't trigger workflow from push
   #  branches: ["main"]
 
-  schedule:
-    - cron: "0 20 * * 5"
-    # runs at 04:00 every Saturday, Beijing time
-    # 20:00 UTC Friday = 01:00 Beijing Saturday
-    # cron may be delayed by GitHub Actions
   workflow_dispatch:
+
+  workflow_run:
+    workflows: ["update_history500"]
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -46,8 +46,8 @@ jobs:
           pushd quant-tracer
           python quant_tracer.py
 
-          timeout 2h python quant_tracer.py --trend
-          timeout 5m python quant_tracer.py --trend > "../trend/trend.txt"
+          timeout 2h python quant_tracer.py --trend2000
+          timeout 5m python quant_tracer.py --trend2000 > "../trend2000/trend2000.txt"
 
           popd
 
@@ -76,5 +76,5 @@ jobs:
           git pull
           git add -u
 
-          git commit -m "[ci-bot] weekly trend: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] weekly trend2000: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main

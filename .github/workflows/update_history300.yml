@@ -17,7 +17,7 @@ permissions:
   # so github bot could commit changes
 
 jobs:
-  update-history300:
+  update-history:
     runs-on: ubuntu-latest
     defaults:
       run:
