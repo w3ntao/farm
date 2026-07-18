@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
   workflow_run:
-    workflows: ["update_lowvol", "update_trend500", "update_history300", "update_history500"]
+    workflows: ["update_lowvol", "update_trend500", "update_trend2000", "update_history300", "update_history500"]
     types:
       - completed
 

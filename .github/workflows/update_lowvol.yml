@@ -74,12 +74,16 @@ jobs:
           popd
 
       - name: archive stock cache
+        if: steps.check.outputs.should_run == 'true'
+
         run: |
           pushd quant-tracer/cache
           zip -r "${GITHUB_WORKSPACE}/${STOCK_DATE}.zip" "${STOCK_DATE}"
           popd
 
       - name: publish stock cache release
+        if: steps.check.outputs.should_run == 'true'
+
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.STOCK_DATE }}
@@ -93,11 +97,17 @@ jobs:
         env:
           TZ: Asia/Shanghai
         run: |
+          if git diff --cached --quiet; then
+            echo "No changes to commit, skipping push."
+
+            exit 0
+          fi
+
           git config user.name "Wentao Liu"
           git config user.email "wentao.liu.zero@outlook.com"
 
           git pull
           git add -u
 
-          git commit -m "[ci-bot] daily lowvol: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] daily lowvol: ${STOCK_DATE}"
           git push -u origin main
