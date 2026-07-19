@@ -1,4 +1,4 @@
-name: update_history300
+name: update_equal500
 
 on:
   #push: # don't trigger workflow from push
@@ -6,18 +6,17 @@ on:
 
   workflow_dispatch:
 
-  schedule:
-    - cron: "0 17 * * 5"
-    # runs at 01:00 every Saturday, Beijing time
-    # 17:00 UTC Friday = 01:00 Beijing Saturday
-    # cron may be delayed by GitHub Actions
+  workflow_run:
+    workflows: ["update_equal300"] # triggered by equal 300
+    types:
+      - completed
 
 permissions:
   contents: write
   # so github bot could commit changes
 
 jobs:
-  update-history-300:
+  update-equal-500:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,15 +41,12 @@ jobs:
           git clone https://x-access-token:${{ secrets.KEY_QUANT_TRACER }}@github.com/w3ntao/quant-tracer.git
           pip install --upgrade -r quant-tracer/requirements.txt
 
-      - name: trace history
+      - name: trace equal
         run: |
           pushd quant-tracer
 
-          timeout 1h python quant_tracer.py --history100
-          mv zhongzheng100_*.png ../history100
-
-          timeout 2h python quant_tracer.py --history300
-          mv hushen300_*.png ../history300
+          timeout 2h python quant_tracer.py --equal500
+          mv zhongzheng500_*.png ../equal500
 
           popd
 
@@ -83,7 +79,7 @@ jobs:
           git config user.email "wentao.liu.zero@outlook.com"
 
           git pull
-          git add history*
+          git add equal*
 
-          git commit -m "[ci-bot] weekly history300: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] weekly equal500: ${STOCK_DATE}" || echo "No changes"
           git push -u origin main

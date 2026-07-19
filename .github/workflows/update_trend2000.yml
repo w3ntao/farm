@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
   workflow_run:
-    workflows: ["update_history500"]
+    workflows: ["update_equal500"]
     types:
       - completed
 
