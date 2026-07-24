@@ -25,7 +25,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
 
       - name: install dependencies
         run: |
@@ -59,8 +61,16 @@ jobs:
 
       - name: archive stock cache
         run: |
-          pushd quant-tracer/cache
-          zip -r "${GITHUB_WORKSPACE}/${STOCK_DATE}.zip" "${STOCK_DATE}"
+          pushd quant-tracer
+
+          mv cache/${STOCK_DATE} cache/new-${STOCK_DATE}
+
+          python quant_tracer.py --download_cache
+
+          mv cache/new-${STOCK_DATE}/* cache/${STOCK_DATE}/
+
+          zip -r ${GITHUB_WORKSPACE}/${STOCK_DATE}.zip cache/${STOCK_DATE}
+
           popd
 
       - name: publish stock cache release
@@ -76,7 +86,7 @@ jobs:
         env:
           TZ: Asia/Shanghai
         run: |
-          if git diff --cached --quiet; then
+          if git diff --quiet && git diff --cached --quiet; then
             echo "No changes to commit, skipping push."
 
             exit 0
@@ -88,5 +98,5 @@ jobs:
           git pull
           git add equal*
 
-          git commit -m "[ci-bot] weekly equal300: ${STOCK_DATE}" || echo "No changes"
+          git commit -m "[ci-bot] weekly equal300: ${STOCK_DATE}"
           git push -u origin main
