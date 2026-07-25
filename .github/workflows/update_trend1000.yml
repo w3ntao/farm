@@ -1,4 +1,4 @@
-name: update_trend500
+name: update_trend1000
 
 on:
   #push: # don't trigger workflow from push
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
   workflow_run:
-    workflows: ["update_trend1000"]
+    workflows: ["update_lowvol"]
     types:
       - completed
 
@@ -16,7 +16,7 @@ permissions:
   # so github bot could commit changes
 
 jobs:
-  update-trend-500:
+  update-trend-1000:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,8 +49,8 @@ jobs:
           pushd quant-tracer
           python quant_tracer.py
 
-          timeout 1h python quant_tracer.py --trend500
-          timeout 5m python quant_tracer.py --trend500 > "../trend500/trend500.txt"
+          timeout 2h python quant_tracer.py --trend1000
+          timeout 5m python quant_tracer.py --trend1000 > "../trend1000/trend1000.txt"
 
           popd
 
@@ -93,5 +93,5 @@ jobs:
           git pull
           git add trend*
 
-          git commit -m "[ci-bot] weekly trend500: ${STOCK_DATE}"
+          git commit -m "[ci-bot] weekly trend1000: ${STOCK_DATE}"
           git push -u origin main
