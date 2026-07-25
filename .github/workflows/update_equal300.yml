@@ -67,9 +67,11 @@ jobs:
 
           python quant_tracer.py --download_cache
 
-          mv cache/new-${STOCK_DATE}/* cache/${STOCK_DATE}/
+          cd cache
 
-          zip -r ${GITHUB_WORKSPACE}/${STOCK_DATE}.zip cache/${STOCK_DATE}
+          mv new-${STOCK_DATE}/* ${STOCK_DATE}/
+
+          zip -r ${GITHUB_WORKSPACE}/${STOCK_DATE}.zip ${STOCK_DATE}
 
           popd
 
