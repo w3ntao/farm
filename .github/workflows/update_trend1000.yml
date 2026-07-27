@@ -1,15 +1,12 @@
 name: update_trend1000
 
 on:
-  #push: # don't trigger workflow from push
-  #  branches: ["main"]
-
+  schedule:
+    - cron: "0 9 * * *"
+    # runs on 9:00 of everyday
+    # 9:00 UTC = 17:00 Beijing
+    # cron is usually delayed so it would probably start around 18:00
   workflow_dispatch:
-
-  workflow_run:
-    workflows: ["update_lowvol"]
-    types:
-      - completed
 
 permissions:
   contents: write
