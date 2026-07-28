@@ -121,5 +121,5 @@ jobs:
           git pull
           git add -u
 
-          git commit -m "[ci-bot] daily lowvol: ${STOCK_DATE}"
+          git commit -m "[ci-bot] daily Low Vol: ${STOCK_DATE}"
           git push -u origin main
