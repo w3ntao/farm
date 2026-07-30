@@ -48,8 +48,7 @@ jobs:
           pushd quant-tracer
           python quant_tracer.py
 
-          timeout 1h python quant_tracer.py --lowpe
-          timeout 1m python quant_tracer.py --lowpe > "../lowpe/lowpe_stocks.txt"
+          timeout 1h python quant_tracer.py --lowpe > "../lowpe/lowpe_stocks.txt"
 
           popd
 
