@@ -41,6 +41,7 @@ jobs:
       - name: clone quant-tracer
         run: |
           git clone https://x-access-token:${{ secrets.KEY_QUANT_TRACER }}@github.com/w3ntao/quant-tracer.git
+          sudo apt install -y attr
           pip install --upgrade -r quant-tracer/requirements.txt
 
       - name: trace equal
