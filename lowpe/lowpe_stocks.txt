@@ -1,12 +1,3 @@
-('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
-HTTPSConnectionPool(host='datacenter-web.eastmoney.com', port=443): Read timed out.
 stock date: 2026/08/03
 selection: 320/3193
 
