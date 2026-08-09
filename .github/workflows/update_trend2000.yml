@@ -39,10 +39,23 @@ jobs:
           echo "STOCK_DATE=$(python market_utility.py --last_stock_date)" >> $GITHUB_ENV
 
       - name: clone quant-tracer
+        uses: actions/checkout@v4
+        with:
+          repository: w3ntao/quant-tracer
+          token: ${{ secrets.KEY_QUANT_TRACER_RECUR }}
+          path: quant-tracer
+          fetch-depth: 0 # download full history
+          submodules: recursive
+          persist-credentials: true
+
+      - name: prepare quant-tracer
         run: |
-          git clone https://x-access-token:${{ secrets.KEY_QUANT_TRACER }}@github.com/w3ntao/quant-tracer.git
           sudo apt install -y attr
           pip install --upgrade -r quant-tracer/requirements.txt
+
+          pushd quant-tracer/index-history
+          git pull --ff-only origin main
+          popd
 
       - name: trace stocks
         run: |

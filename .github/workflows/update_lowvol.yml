@@ -56,10 +56,24 @@ jobs:
       - name: clone quant-tracer
         if: steps.check.outputs.should_run == 'true'
 
+        uses: actions/checkout@v4
+        with:
+          repository: w3ntao/quant-tracer
+          token: ${{ secrets.KEY_QUANT_TRACER_RECUR }}
+          path: quant-tracer
+          fetch-depth: 0 # download full history
+          submodules: recursive
+          persist-credentials: true
+
+      - name: prepare quant-tracer
+        if: steps.check.outputs.should_run == 'true'
         run: |
-          git clone https://x-access-token:${{ secrets.KEY_QUANT_TRACER }}@github.com/w3ntao/quant-tracer.git
           sudo apt install -y attr
           pip install --upgrade -r quant-tracer/requirements.txt
+
+          pushd quant-tracer/index-history
+          git pull --ff-only origin main
+          popd
 
       - name: trace stocks
         if: steps.check.outputs.should_run == 'true'
