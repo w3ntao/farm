@@ -4,19 +4,25 @@ on:
   #push: # don't trigger workflow from push
   #  branches: ["main"]
 
-  schedule:
-    - cron: "0 9 * * 1-5"
-    # runs at 9:00 UTC, Monday through Friday
-    # 9:00 UTC = 17:00 Beijing
-    # cron is usually delayed so it would probably start around 18:00
   workflow_dispatch:
+
+  workflow_run:
+    workflows: ["daily_trigger"]
+    types:
+      - completed
 
 permissions:
   contents: write
   # so github bot could commit changes
 
+concurrency:
+  group: main-repository-updates
+  queue: max
+  cancel-in-progress: false
+
 jobs:
   update-lowvol:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -124,17 +130,29 @@ jobs:
         env:
           TZ: Asia/Shanghai
         run: |
-          if git diff --quiet && git diff --cached --quiet; then
+          git config user.name "Wentao Liu"
+          git config user.email "wentao.liu.zero@outlook.com"
+
+          git add -A -- lowvol lowvol_former
+
+          if git diff --cached --quiet; then
             echo "No changes to commit, skipping push."
 
             exit 0
           fi
 
-          git config user.name "Wentao Liu"
-          git config user.email "wentao.liu.zero@outlook.com"
-
-          git pull
-          git add -u
-
           git commit -m "[ci-bot] daily Low Vol: ${STOCK_DATE}"
-          git push -u origin main
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+
+            if git rebase origin/main && git push origin HEAD:main; then
+              exit 0
+            fi
+
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 5))
+          done
+
+          echo "Failed to push changes after multiple attempts."
+          exit 1

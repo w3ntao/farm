@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
   workflow_run:
-    workflows: ["update_lowvol","update_lowpe", "update_trend500", "update_trend1000", "update_trend2000", "update_equal300", "update_equal500"]
+    workflows: ["update_lowvol", "update_temperature","update_lowpe", "update_trend500", "update_trend1000", "update_trend2000", "update_equal300", "update_equal500"]
     types:
       - completed
 
@@ -29,6 +29,7 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

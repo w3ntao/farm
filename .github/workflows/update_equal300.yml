@@ -16,6 +16,11 @@ permissions:
   contents: write
   # so github bot could commit changes
 
+concurrency:
+  group: main-repository-updates
+  queue: max
+  cancel-in-progress: false
+
 jobs:
   update-equal-300:
     runs-on: ubuntu-latest
@@ -102,17 +107,29 @@ jobs:
         env:
           TZ: Asia/Shanghai
         run: |
-          if git diff --quiet && git diff --cached --quiet; then
+          git config user.name "Wentao Liu"
+          git config user.email "wentao.liu.zero@outlook.com"
+
+          git add -A -- equal50 equal100 equal300
+
+          if git diff --cached --quiet; then
             echo "No changes to commit, skipping push."
 
             exit 0
           fi
 
-          git config user.name "Wentao Liu"
-          git config user.email "wentao.liu.zero@outlook.com"
-
-          git pull
-          git add equal*
-
           git commit -m "[ci-bot] weekly equal300: ${STOCK_DATE}"
-          git push -u origin main
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+
+            if git rebase origin/main && git push origin HEAD:main; then
+              exit 0
+            fi
+
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 5))
+          done
+
+          echo "Failed to push changes after multiple attempts."
+          exit 1

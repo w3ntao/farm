@@ -1,0 +1,17 @@
+name: daily_trigger
+
+on:
+  schedule:
+    - cron: "0 9 * * 1-5"
+    # runs at 9:00 UTC, Monday through Friday
+    # 9:00 UTC = 17:00 Beijing
+    # cron is usually delayed so it would probably start around 18:00
+
+  workflow_dispatch:
+
+jobs:
+  daily-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: no-op
+        run: ":"
