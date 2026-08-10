@@ -1,0 +1,22 @@
+.image-report-page {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, "Microsoft YaHei", sans-serif;
+    background: #fff;
+    color: #222;
+}
+
+.image-report {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: min(100%, 1200px);
+    margin: 0 auto;
+}
+
+.image-report > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #fff;
+}
