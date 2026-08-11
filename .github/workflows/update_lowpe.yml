@@ -15,14 +15,8 @@ permissions:
   contents: write
   # so github bot could commit changes
 
-concurrency:
-  group: main-repository-updates
-  queue: max
-  cancel-in-progress: false
-
 jobs:
   update-lowpe:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -59,7 +53,7 @@ jobs:
           sudo apt install -y attr
           pip install --upgrade -r quant-tracer/requirements.txt
 
-          pushd quant-tracer/index-history
+          pushd quant-tracer/index_history
           git pull --ff-only origin main
           popd
 
