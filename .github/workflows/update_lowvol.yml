@@ -1,152 +1,57 @@
 name: update_lowvol
 
 on:
-  #push: # don't trigger workflow from push
-  #  branches: ["main"]
-
   workflow_dispatch:
-
-  workflow_run:
-    workflows: ["daily_trigger"]
-    types:
-      - completed
 
 permissions:
   contents: write
-  # so github bot could commit changes
 
 jobs:
-  update-lowvol:
+  update:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash # now you can use pushd and popd
+        shell: bash
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.13'
-
-      - name: install dependencies
-        run: |
-          pip install --upgrade -r requirements.txt
-
-      - name: Set DATE variable
-        env:
-          TZ: Asia/Shanghai
-        run: |
-          echo "STOCK_DATE=$(python market_utility.py --last_stock_date)" >> $GITHUB_ENV
-
-      - name: check market open
-        id: check
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_run=true" >> ${GITHUB_OUTPUT}
-            exit 0
-          fi
-
-          if python market_utility.py --open_today; then
-            echo "should_run=true" >> ${GITHUB_OUTPUT}
-          else
-            echo "market closed today, skipping workflow"
-            echo "should_run=false" >> ${GITHUB_OUTPUT}
-          fi
+          python-version: '3.x'
 
       - name: clone quant-tracer
-        if: steps.check.outputs.should_run == 'true'
-
         uses: actions/checkout@v4
         with:
           repository: w3ntao/quant-tracer
           token: ${{ secrets.KEY_QUANT_TRACER_RECUR }}
           path: quant-tracer
-          fetch-depth: 0 # download full history
+          fetch-depth: 0
           submodules: recursive
           persist-credentials: true
 
       - name: prepare quant-tracer
-        if: steps.check.outputs.should_run == 'true'
         run: |
-          sudo apt install -y attr
-          pip install --upgrade -r quant-tracer/requirements.txt
-
-          pushd quant-tracer/index_history
-          git pull --ff-only origin main
-          popd
+          bash quant-tracer/configure.sh
 
       - name: trace stocks
-        if: steps.check.outputs.should_run == 'true'
-
         run: |
           pushd quant-tracer
-          python quant_tracer.py
 
           timeout 1h python quant_tracer.py --lowvol
-          timeout 5m python quant_tracer.py --lowvol > "../lowvol/blue_stocks.txt"
+          timeout 5m python quant_tracer.py --lowvol > ../lowvol/blue_stocks.txt
 
           timeout 30m python quant_tracer.py --lowvol_former
-          timeout 5m  python quant_tracer.py --lowvol_former > "../lowvol_former/former_blue_stocks.txt"
+          timeout 5m  python quant_tracer.py --lowvol_former > ../lowvol_former/former_blue_stocks.txt
 
           popd
 
-      - name: archive stock cache
-        if: steps.check.outputs.should_run == 'true'
-
+      - name: update cache
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          pushd quant-tracer
-
-          mv cache/${STOCK_DATE} cache/new-${STOCK_DATE}
-
-          python quant_tracer.py --download_cache
-
-          cd cache
-
-          mv new-${STOCK_DATE}/* ${STOCK_DATE}/
-
-          zip -r ${GITHUB_WORKSPACE}/${STOCK_DATE}.zip ${STOCK_DATE}
-
-          popd
-
-      - name: publish stock cache release
-        if: steps.check.outputs.should_run == 'true'
-
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.STOCK_DATE }}
-          name: cache-${{ env.STOCK_DATE }}
-          body: |
-            daily cache: ${{ env.STOCK_DATE }}
-          files: ${{ env.STOCK_DATE }}.zip
+          python quant-tracer/github_helper.py --update_cache
 
       - name: commit changes
-        if: steps.check.outputs.should_run == 'true'
-        env:
-          TZ: Asia/Shanghai
         run: |
-          git config user.name "Wentao Liu"
-          git config user.email "wentao.liu.zero@outlook.com"
-
-          git add -A -- lowvol lowvol_former
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit, skipping push."
-
-            exit 0
-          fi
-
-          git commit -m "[ci-bot] daily Low Vol: ${STOCK_DATE}"
-
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-
-            if git rebase origin/main && git push origin HEAD:main; then
-              exit 0
-            fi
-
-            git rebase --abort 2>/dev/null || true
-            sleep $((attempt * 5))
-          done
-
-          echo "Failed to push changes after multiple attempts."
-          exit 1
+          git add lowvol lowvol_former
+          python quant-tracer/github_helper.py -commit "[ci-bot] daily low vol"
