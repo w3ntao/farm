@@ -28,16 +28,6 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: install dependencies
-        run: |
-          pip install --upgrade -r requirements.txt
-
-      - name: Set DATE variable
-        env:
-          TZ: Asia/Shanghai
-        run: |
-          echo "STOCK_DATE=$(python market_utility.py --last_stock_date)" >> $GITHUB_ENV
-
       - name: clone quant-tracer
         uses: actions/checkout@v4
         with:
@@ -50,49 +40,16 @@ jobs:
 
       - name: prepare quant-tracer
         run: |
-          sudo apt install -y attr
-          pip install --upgrade -r quant-tracer/requirements.txt
-
-          pushd quant-tracer/index_history
-          git pull --ff-only origin main
-          popd
+          bash quant-tracer/prepare_quant_tracer.sh
 
       - name: trace stocks
         run: |
           pushd quant-tracer
-          python quant_tracer.py
-
           timeout 1h python quant_tracer.py --lowpe > "../lowpe/lowpe_stocks.txt"
-
           popd
 
       - name: commit changes
-        env:
-          TZ: Asia/Shanghai
         run: |
-          git config user.name "Wentao Liu"
-          git config user.email "wentao.liu.zero@outlook.com"
-
-          git add -A -- lowpe
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit, skipping push."
-
-            exit 0
-          fi
-
-          git commit -m "[ci-bot] daily low PE: ${STOCK_DATE}"
-
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-
-            if git rebase origin/main && git push origin HEAD:main; then
-              exit 0
-            fi
-
-            git rebase --abort 2>/dev/null || true
-            sleep $((attempt * 5))
-          done
-
-          echo "Failed to push changes after multiple attempts."
-          exit 1
+          python quant-tracer/github_util.py \
+            -add "lowpe" \
+            -commit "[ci-bot] daily low PE"
