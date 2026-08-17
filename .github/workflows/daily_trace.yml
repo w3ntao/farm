@@ -1,10 +1,10 @@
-name: daily_trigger
+name: daily_trace
 
 on:
   schedule:
-    - cron: "0 10 * * 1-5"
+    - cron: "0 11 * * 1-5"
     # runs at 10:00 UTC, Monday through Friday
-    # 10:00 UTC -> 18:00 (+ 01:00) Beijing
+    # 11:00 UTC -> 19:00 (+ 01:00) Beijing
     # cron is usually delayed by 1 hour
 
   workflow_dispatch:
