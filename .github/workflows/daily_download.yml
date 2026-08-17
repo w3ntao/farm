@@ -1,0 +1,50 @@
+name: daily_download
+
+on:
+  schedule:
+    # 10:00 UTC / 18:00 Beijing time, Monday through Friday.
+    - cron: "0 10 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch-downloaders:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Dispatch downloader instances
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TARGET_REF: ${{ github.ref_name }}
+          GROUP: "4"
+        run: |
+          python -m pip install chinesecalendar
+
+          if [[ "${GITHUB_EVENT_NAME}" == "schedule" ]] && ! python trade_today.py; then
+            echo "Today is not a trading day; skipping scheduled downloads."
+            exit 0
+          fi
+
+          failed=0
+
+          for ((rank = 0; rank < GROUP; rank++)); do
+            echo "Dispatching downloader ${rank}/${GROUP} on ${TARGET_REF}"
+            if ! gh workflow run downloader.yml \
+              --ref "${TARGET_REF}" \
+              -f download_rank="${rank}" \
+              -f download_group="${GROUP}"; then
+              echo "::error title=Downloader dispatch failed::Could not dispatch downloader ${download_rank}/${GROUP}"
+              failed=1
+            fi
+          done
+
+          exit "${failed}"

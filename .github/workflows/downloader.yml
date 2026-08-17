@@ -1,0 +1,52 @@
+name: downloader
+
+on:
+  workflow_dispatch:
+    inputs:
+      download_rank:
+        description: Zero-based index of this downloader instance
+        required: true
+        type: string
+      download_group:
+        description: Total number of downloader instances
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: clone quant-tracer
+        uses: actions/checkout@v4
+        with:
+          repository: w3ntao/quant-tracer
+          token: ${{ secrets.KEY_QUANT_TRACER_RECUR }}
+          path: quant-tracer
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: true
+
+      - name: prepare quant-tracer
+        run: |
+          bash quant-tracer/configure.sh
+
+      - name: distributed download
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RANK: ${{ inputs.download_rank }}
+          GROUP: ${{ inputs.download_group }}
+        run: |
+          python quant-tracer/quant_tracer.py --download "${RANK}" "${GROUP}"
