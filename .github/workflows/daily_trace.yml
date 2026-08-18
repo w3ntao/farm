@@ -41,6 +41,7 @@ jobs:
           for workflow in \
             update_lowpe.yml \
             update_lowvol.yml \
+            update_trend500 \
             update_trend1000.yml \
             update_temperature.yml
           do

@@ -3,11 +3,6 @@ name: update_trend500
 on:
   workflow_dispatch:
 
-  workflow_run:
-    workflows: ["update_trend1000"]
-    types:
-      - completed
-
 permissions:
   contents: write
 
