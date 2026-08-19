@@ -25,7 +25,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           TARGET_REF: ${{ github.ref_name }}
-          GROUP: "5"
+          GROUP: "7"
         run: |
           python -m pip install chinesecalendar
 
