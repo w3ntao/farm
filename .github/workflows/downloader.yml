@@ -1,6 +1,6 @@
 name: downloader
 
-run-name: downloader-${{ inputs.run_title }}
+run-name: dl-${{ inputs.run_title }}
 
 on:
   workflow_dispatch:
@@ -10,18 +10,8 @@ on:
         required: true
         type: string
 
-      hash:
-        description: "hash for current run"
-        required: true
-        type: string
-
-      download_rank:
+      rank:
         description: Zero-based index of this downloader instance
-        required: true
-        type: number
-
-      download_group:
-        description: Total number of downloader instances
         required: true
         type: number
 
@@ -59,8 +49,6 @@ jobs:
       - name: distributed download
         env:
           GH_TOKEN: ${{ github.token }}
-          HASH: ${{ inputs.hash }}
-          RANK: ${{ inputs.download_rank }}
-          GROUP: ${{ inputs.download_group }}
+          RANK: ${{ inputs.rank }}
         run: |
-          python quant-tracer/quant_tracer.py --distributed_download "${HASH}" "${RANK}" "${GROUP}"
+          python quant-tracer/quant_tracer.py --distributed_download "${RANK}"
