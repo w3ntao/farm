@@ -48,12 +48,6 @@ jobs:
           mv hushen300_*.png ../equal300
           popd
 
-      - name: update cache
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python quant-tracer/github_helper.py --update_cache
-
       - name: commit changes
         run: |
           git add equal*

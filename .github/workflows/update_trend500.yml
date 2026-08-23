@@ -40,12 +40,6 @@ jobs:
           timeout 5m python quant_tracer.py --trend500 > "../trend500/trend500.txt"
           popd
 
-      - name: update cache
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python quant-tracer/github_helper.py --update_cache
-
       - name: commit changes
         run: |
           git add trend500
