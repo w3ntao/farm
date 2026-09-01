@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Wentao Farm 子页面导航">
+    <title>Wentao Farm</title>
+    <style>
+        @font-face {
+            font-family: "MonoCJK";
+            src: url("fonts/SarasaTermSlabSC-subset.woff2") format("woff2");
+            font-display: swap;
+        }
+
+        :root {
+            color-scheme: dark;
+            --page-bg: #202326;
+            --bar-bg: transparent;
+            --border: #454a50;
+            --text: #f1f3f4;
+            --muted: #aeb5bc;
+            --link: #d7e7f5;
+            --link-hover: #ffffff;
+            --focus: #9cc9ef;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            font-family: "MonoCJK", monospace;
+            color: var(--text);
+            background: var(--page-bg);
+            text-rendering: geometricPrecision;
+        }
+
+        header,
+        main {
+            width: min(100%, 1100px);
+            margin: 0 auto;
+        }
+
+        header {
+            padding: 18px 20px;
+            background: var(--page-bg);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.85rem;
+            font-weight: 600;
+            letter-spacing: 0;
+        }
+
+        nav {
+            padding: 8px;
+            background: var(--bar-bg);
+        }
+
+        .nav-list {
+            display: grid;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-row li {
+            min-width: 0;
+            background: var(--bar-bg);
+        }
+
+        .nav-list a {
+            display: block;
+            height: 56px;
+            padding: 17px 16px;
+            color: var(--link);
+            font-size: 1.15rem;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+            text-align: left;
+            text-decoration: none;
+            transition: background-color 120ms ease, color 120ms ease;
+        }
+
+        .nav-list a:hover {
+            color: var(--link-hover);
+            background: #3a4046;
+        }
+
+        .nav-list a:focus-visible {
+            position: relative;
+            z-index: 1;
+            outline: 2px solid var(--focus);
+            outline-offset: -2px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 12px;
+            }
+
+            header {
+                padding: 15px 16px;
+            }
+
+            nav {
+                padding: 4px;
+            }
+
+            .nav-list a {
+                height: 52px;
+                padding: 15px 8px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Wentao Farm</h1>
+    </header>
+
+    <main>
+        <nav aria-label="子页面导航">
+            <ul class="nav-list">
+                <li>
+                    <ul class="nav-row">
+                        <li><a href="temperature/index.html">Temperature</a></li>
+                        <li><a href="ah/index.html">A/H</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <ul class="nav-row">
+                        <li><a href="lowvol/index.html">Low Vol</a></li>
+                        <li><a href="lowpe/index.html">Low PE</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <ul class="nav-row">
+                        <li><a href="dividend/index.html">Dividend</a></li>
+                        <li><a href="dividend_bank/index.html">Dividend Bank</a></li>
+                        <li><a href="back_dividend/index.html">Trace Bank</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <ul class="nav-row">
+                        <li><a href="trend500/index.html">Trend 500</a></li>
+                        <li><a href="trend1000/index.html">Trend 1000</a></li>
+                        <li><a href="trend2000/index.html">Trend 2000</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <ul class="nav-row">
+                        <li><a href="equal50/index.html">Equal 50</a></li>
+                        <li><a href="equal100/index.html">Equal 100</a></li>
+                        <li><a href="equal300/index.html">Equal 300</a></li>
+                        <li><a href="equal500/index.html">Equal 500</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </main>
+</body>
+
+</html>
