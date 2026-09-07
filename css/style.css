@@ -4,6 +4,11 @@
     font-display: swap;
 }
 
+:root {
+    --terminal-background: #2A2A2A;
+    --terminal-foreground: #eee;
+}
+
 body,
 pre,
 code {
@@ -11,8 +16,8 @@ code {
         "MonoCJK",
         monospace;
 
-    background: #2A2A2A;
-    color: #eee;
+    background: var(--terminal-background);
+    color: var(--terminal-foreground);
     padding: 1em;
 
     text-rendering: geometricPrecision;
@@ -25,4 +30,29 @@ pre {
 /* 删除线 */
 .sgr-strike {
     text-decoration: line-through;
+}
+
+/*
+ * Tabby's Dark Side palette for the ANSI-rendered stock reports.  The class
+ * is opt-in so image reports and any future pages can retain their own theme.
+ */
+.dark-side-page {
+    --terminal-background: #222324;
+    --terminal-foreground: #bababa;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    color-scheme: dark;
+}
+
+.dark-side-page #content {
+    box-sizing: border-box;
+    min-height: 100vh;
+    margin: 0;
+    overflow: auto;
+    padding: 1em;
+    background: var(--terminal-background);
+    color: var(--terminal-foreground);
+    white-space: pre;
+    tab-size: 8;
 }
