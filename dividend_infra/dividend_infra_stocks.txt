@@ -1,5 +1,5 @@
 stock date: 2026-09-08
-dividend stocks: 88/239
+dividend stocks: 88/240
 
 PER             dividend           ROE: 2021/12/31 ~ 2025/12/31      H/A      stock
 [31m   9[0m [32m->[0m   12    2x [31m 6.7%[0m  [31m 577%[0m    [32m  -1%[0m [32m  -3%[0m [31m  10%[0m [31m  11%[0m [31m  10%[0m              能  沪  [96m浙能电力[0m
